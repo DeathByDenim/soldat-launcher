@@ -39,3 +39,22 @@ jobs:
         with:
           name: soldat-launcher-windows
           path: out/make/zip/win32/x64/
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Make placeholder directory for Soldat game
+        run: mkdir soldat
+
+      - name: Install packages
+        run: npm ci
+
+      - name: Build launcher
+        run: npm run make
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: soldat-launcher-macos
+          path: out/make/zip/macos/x64/
