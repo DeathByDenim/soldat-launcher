@@ -57,4 +57,4 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: soldat-launcher-macos
-          path: out/make/zip/macos/x64/
+          path: out/make/zip/darwin/x64/
