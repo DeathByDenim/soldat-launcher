@@ -1,6 +1,5 @@
 import React from "react";
-import ReactSelect, {Props as ReactSelectProps, StylesConfig } from "react-select";
-import { ThemeConfig } from "react-select/src/theme";
+import ReactSelect, {Props as ReactSelectProps, StylesConfig, ThemeConfig } from "react-select";
 import { SelectOption } from "src/types";
 
 /* This is a wrapper for react-select. It provides styling compatible
@@ -40,14 +39,14 @@ interface SelectProps extends ReactSelectProps {
 }
 
 const Select: React.FC<SelectProps> = props => {
-    const customStyles: StylesConfig = {
+    const customStyles: StylesConfig<SelectOption, boolean> = {
         container: (defaultStyles) => ({
             ...defaultStyles,
             width: "100%"
         }),
         control: (defaultStyles) => ({
             ...defaultStyles,
-            boxShadow: null,
+            boxShadow: "none",
             minHeight: "2rem",
             height: "2rem",
             fontSize: "1em",
@@ -88,6 +87,7 @@ const Select: React.FC<SelectProps> = props => {
             ...defaultStyles,
             height: "100%",
             lineHeight: "2rem",
+            textAlign: "center",
             verticalAlign: "middle"
         }),
         valueContainer: (defaultStyles) => ({

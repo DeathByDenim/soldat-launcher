@@ -1,5 +1,5 @@
 import { defaultsDeep } from "lodash";
-import { computed, observable } from "mobx";
+import { computed, observable, makeObservable } from "mobx";
 import { ServerConfig } from "src/api/soldat/configs/types";
 import { GameModes } from "src/types";
 import { toBool, toNumber, toString } from "../convertUtils";
@@ -148,6 +148,7 @@ class ServerSettings implements ServerSettingsData {
     @observable network: NetworkSettings;
 
     constructor(config?: ServerConfig) {
+        makeObservable(this);
         this.gameplay = {
             mode: toNumber(config?.cvars.sv_gamemode),
             styles: {
@@ -227,7 +228,6 @@ class ServerSettings implements ServerSettingsData {
     toConfig(): ServerConfig {
         return {
             bindings: null,
-            /* eslint-disable @typescript-eslint/camelcase */
             cvars: {
                 sv_gamemode: toString(this.gameplay.mode),
                 sv_timelimit: toString(this.gameplay.timeLimit * 3600),
@@ -272,7 +272,6 @@ class ServerSettings implements ServerSettingsData {
 
                 net_port: this.network.port
             }
-            /* eslint-enable @typescript-eslint/camelcase */
         }
     }
 

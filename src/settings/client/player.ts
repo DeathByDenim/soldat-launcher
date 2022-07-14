@@ -1,5 +1,5 @@
 import { defaults } from "lodash";
-import { computed, observable } from "mobx";
+import { computed, observable, makeObservable } from "mobx";
 
 import { HexColor } from "src/types";
 import { PlayerConfig } from "src/api/soldat/configs/types";
@@ -77,6 +77,7 @@ class PlayerSettings implements PlayerSettingsData {
     @observable secondaryWeapon: SecondaryWeapons;
 
     constructor(config?: PlayerConfig) {
+        makeObservable(this);
         this.nickname = config?.cvars.cl_player_name;
         this.hairColor = toHexColor(config?.cvars.cl_player_hair),
         this.shirtColor = toHexColor(config?.cvars.cl_player_shirt),
@@ -97,7 +98,6 @@ class PlayerSettings implements PlayerSettingsData {
         // Theoretically Soldat should handle such scenarios just fine.
         return {
             bindings: null,
-            /* eslint-disable @typescript-eslint/camelcase */
             cvars: {
                 cl_player_name: this.nickname,
                 
@@ -112,7 +112,6 @@ class PlayerSettings implements PlayerSettingsData {
                 cl_player_chainstyle: toString(this.chainStyle),
                 cl_player_secwep: toString(this.secondaryWeapon)
             }
-            /* eslint-enable @typescript-eslint/camelcase */
         }
     }
 

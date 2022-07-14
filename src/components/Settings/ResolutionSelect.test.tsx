@@ -1,73 +1,45 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 import ResolutionSelect from "./ResolutionSelect";
-import Select from "../Common/Select";
-import IntegerInput from "../Common/IntegerInput";
 
-test("Renders 2 IntegerInputs after selecting 'custom' option", () => {
-    const wrapper = mount(
-        <ResolutionSelect resolution={{ width: 800, height: 600 }} />
-    )
+test("Renders 2 inputs for width and height after selecting 'custom' option", () => {
+    const width = 800, height = 600;
+    render(<ResolutionSelect resolution={{ width, height }} />);
 
-    const select = wrapper.find(Select);
+    const currOption = screen.getByText(`${width} x ${height}`);
+    // Couldn't find a better way to open the select
+    fireEvent.focus(currOption);
+    fireEvent.keyDown(currOption, { key: "ArrowDown" });
 
-    select.simulate("focus");
-    select.simulate("keyDown", { key: "ArrowDown", keyCode: 40, code: 40 });
+    const customOption = screen.getByText("Custom...");
+    fireEvent.click(customOption);
 
-    const customOption = wrapper.findWhere(x => {
-        return x.children().length === 1 && x.children().html() === "Custom...";
-    }).hostNodes();
-    customOption.simulate("click");
+    const widthInput = screen.getByDisplayValue(width) as HTMLInputElement;
+    const heightInput = screen.getByDisplayValue(height) as HTMLInputElement;
 
-    const integerInputs = wrapper.find(IntegerInput);
-    expect(integerInputs.length).toEqual(2);
-
-    const widthInput = integerInputs.find("input[name='resolution-width']").getDOMNode<HTMLInputElement>();
-    expect(widthInput.value).toEqual("800");
-    const heightInput = integerInputs.find("input[name='resolution-height']").getDOMNode<HTMLInputElement>();
-    expect(heightInput.value).toEqual("600");
+    expect(widthInput.value).toEqual(`${width}`);
+    expect(heightInput.value).toEqual(`${height}`);
 });
 
 test("Preselects 'Match display' option when resolution width is 0", () => {
-    const wrapper = mount(
-        <ResolutionSelect resolution={{ width: 0, height: 600 }} />
-    )
-    // Make sure we rerender before making assertions on DOM.
-    wrapper.update();
-    expect(wrapper.text().includes("Match display")).toEqual(true);
+    render(<ResolutionSelect resolution={{ width: 0, height: 600 }} />);
+    expect(screen.queryByText("Match display")).not.toBeNull();
 });
 
 test("Preselects 'Match display' option when resolution height is 0", () => {
-    const wrapper = mount(
-        <ResolutionSelect resolution={{ width: 800, height: 0 }} />
-    )
-    // Make sure we rerender before making assertions on DOM.
-    wrapper.update();
-    expect(wrapper.text().includes("Match display")).toEqual(true);
+    render(<ResolutionSelect resolution={{ width: 800, height: 0 }} />);
+    expect(screen.queryByText("Match display")).not.toBeNull();
 });
 
 test("Preselects 'Custom...' option when resolution is not common", () => {
-    const wrapper = mount(
-        <ResolutionSelect resolution={{ width: 456, height: 567 }} />
-    )
-    // Make sure we rerender before making assertions on DOM.
-    wrapper.update();
-    expect(wrapper.text().includes("Custom...")).toEqual(true);
+    render(<ResolutionSelect resolution={{ width: 456, height: 567 }} />);
+    expect(screen.queryByText("Custom...")).not.toBeNull();
 });
 
 test("Preselects new option when reference to resolution prop changes", () => {
-    const wrapper = mount(
-        <ResolutionSelect resolution={{ width: 800, height: 600 }} />
-    )
-
-    wrapper.update();
-    expect(wrapper.text().includes("1600 x 900")).toEqual(false);
-    wrapper.setProps({
-        resolution: {
-            width: 1600,
-            height: 900
-        }
-    });
-    expect(wrapper.text().includes("1600 x 900")).toEqual(true);
+    const { rerender } = render(<ResolutionSelect resolution={{ width: 800, height: 600 }} />);
+    expect(screen.queryByText("1600 x 900")).toBeNull();
+    rerender(<ResolutionSelect resolution={{ width: 1600, height: 900 }} />);
+    expect(screen.queryByText("1600 x 900")).not.toBeNull();
 });

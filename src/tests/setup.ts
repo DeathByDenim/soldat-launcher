@@ -1,6 +1,4 @@
-import { configure } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
-import { useStaticRendering } from "mobx-react";
+import { enableStaticRendering } from "mobx-react";
 
 import {
     start as startServer,
@@ -40,8 +38,7 @@ import { play as playDemo } from "src/api/soldat/demos";
 import { listFilesNames, listSubdirectoriesNames } from "src/api/directoryListing";
 import { soldatPaths } from "src/api/soldat/paths";
  
-configure({ adapter: new Adapter() });
-useStaticRendering(true);
+enableStaticRendering(true);
 
 /* We provide the same apis that we have when running the app with Electron.
  * You can mock them in individual tests. */
