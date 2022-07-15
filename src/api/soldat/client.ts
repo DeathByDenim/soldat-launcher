@@ -46,7 +46,7 @@ const start = (
     const clientProcess = spawn(soldatPaths.clientExecutable, [
         joinArguments,
         launchArguments
-    ], { detached: detachedProcess });
+    ], { detached: detachedProcess, env: { XDG_DATA_HOME: soldatPaths.clientConfigsDirectory() } });
 
     clientProcess.on("close", () => {
         onTerminated(clientId);
