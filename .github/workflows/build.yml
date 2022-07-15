@@ -7,8 +7,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Make placeholder directory for Soldat game
-        run: mkdir soldat
+      - name: Get Soldat game
+        run: |
+          mkdir soldat
+          wget 'https://github.com/opensoldat/opensoldat/releases/download/continuous/linux-appimage.zip'
+          unzip linux-appimage.zip
+          mv opensoldat-continuous-*-x86_64.AppImage soldat/opensoldat
+          chmod +x soldat/opensoldat
+          wget 'https://github.com/opensoldat/opensoldat/releases/download/continuous/linux-server-only-appimage.zip'
+          unzip linux-server-only-appimage.zip
+          mv opensoldatserver-continuous-*-x86_64.AppImage soldat/opensoldatserver
+          chmod +x soldat/opensoldatserver
 
       - name: Install packages
         run: npm ci
