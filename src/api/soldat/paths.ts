@@ -6,7 +6,7 @@ const soldatPaths = {
     serverDirectory: isProduction ? path.resolve(process.resourcesPath, "soldat") : "./soldat",
 
     get clientExecutable(): string {
-        let clientExecutableFilename = "soldat";
+        let clientExecutableFilename = "opensoldat";
         if (process.platform === "win32") {
             clientExecutableFilename += ".exe";
         }
@@ -68,7 +68,7 @@ const soldatPaths = {
     },
 
     get serverExecutable(): string {
-        let serverExecutableFilename = "soldatserver";
+        let serverExecutableFilename = "opensoldatserver";
         if (process.platform === "win32") {
             serverExecutableFilename += ".exe";
         }
