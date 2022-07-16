@@ -24,7 +24,9 @@ const start = (
     onFailed: (error: Error) => void,
     onTerminated: (exitCode: number, stderr: string) => void
 ): void => {
+    let pathArguments = "-fs_userpath \"" + soldatPaths.serverDirectory + "\"";
     serverProcess = spawn(soldatPaths.serverExecutable, [
+        pathArguments,
         launchArguments
     ]);
 

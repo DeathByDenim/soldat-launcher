@@ -43,10 +43,13 @@ const start = (
         joinArguments += " " + password;
     }
 
+    let pathArguments = "-fs_portable 1 -fs_userpath \"" + soldatPaths.clientDirectory + "\"";
+
     const clientProcess = spawn(soldatPaths.clientExecutable, [
+        pathArguments,
         joinArguments,
         launchArguments
-    ], { detached: detachedProcess, env: { XDG_DATA_HOME: soldatPaths.clientDirectory } });
+    ], { detached: detachedProcess });
 
     clientProcess.on("close", () => {
         onTerminated(clientId);
