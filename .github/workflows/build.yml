@@ -39,7 +39,7 @@ jobs:
 
       - name: Get Soldat game
         run: |
-          curl 'https://github.com/opensoldat/opensoldat/releases/download/continuous/windows-build.zip' -O windows-build.zip
+          curl -O 'https://github.com/opensoldat/opensoldat/releases/download/continuous/windows-build.zip'
           unzip windows-build.zip
           mv windows-build soldat
           rm windows-build.zip
@@ -62,7 +62,7 @@ jobs:
 
       - name: Get Soldat game
         run: |
-          curl 'https://github.com/DeathByDenim/soldat/releases/download/continuous/macos-build.zip' -O macos-build.zip
+          curl -O 'https://github.com/DeathByDenim/soldat/releases/download/continuous/macos-build.zip'
           unzip macos-build.zip
           mv macos-build soldat
           rm macos-build.zip
