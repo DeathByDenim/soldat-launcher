@@ -2,6 +2,12 @@ import fs from "fs";
 import { soldatPaths } from "../paths";
 import { ControlsConfig, GameConfig, GraphicsConfig, PlayerConfig, ServerConfig, SoundConfig } from "./types";
 import { configToFileData, parseConfigFileData, SoldatConfig } from "./parser";
+import ControlsSettings from "src/settings/client/controls";
+import CustomBindings from "src/settings/client/customBindings";
+import GameSettings from "src/settings/client/game";
+import GraphicsSettings from "src/settings/client/graphics";
+import PlayerSettings from "src/settings/client/player";
+import SoundSettings from "src/settings/client/sound";
 
 const loadConfig = <T extends SoldatConfig>(configFilePath: string): Promise<T> => {
     return fs.promises.readFile(configFilePath, { encoding: "utf8" })
@@ -46,7 +52,6 @@ const saveConfig = (configFilePath: string, config: SoldatConfig): Promise<void>
     return makeConfigsFolders()
         .then(() => fs.promises.writeFile(configFilePath, configToFileData(config))
             .then(() => concatClientConfig())
-//             .catch(error => Promise.reject(error.message));
         )
         .catch(error => Promise.reject(error.message));
 }
@@ -54,20 +59,24 @@ const saveConfig = (configFilePath: string, config: SoldatConfig): Promise<void>
 const concatClientConfig = (): Promise<void> => {
     let fullConfigData = "";
     let configFiles = [
-        soldatPaths.clientControlsConfigFile,
-        soldatPaths.clientCustomBindingsConfigFile,
-        soldatPaths.clientGameConfigFile,
-        soldatPaths.clientGraphicsConfigFile,
-        soldatPaths.clientPlayerConfigFile,
-        soldatPaths.clientSoundConfigFile
+        {"setting": ControlsSettings, "path": soldatPaths.clientControlsConfigFile},
+        {"setting": CustomBindings, "path": soldatPaths.clientCustomBindingsConfigFile},
+        {"setting": GameSettings, "path": soldatPaths.clientGameConfigFile},
+        {"setting": GraphicsSettings, "path": soldatPaths.clientGraphicsConfigFile},
+        {"setting": PlayerSettings, "path": soldatPaths.clientPlayerConfigFile},
+        {"setting": SoundSettings, "path": soldatPaths.clientSoundConfigFile}
     ];
 
     const isFulfilled = <T>(input: PromiseSettledResult<T>): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
     return Promise.allSettled(
         configFiles.map(configFile => {
-            return fs.promises.readFile(configFile, { encoding: "utf8" })
+            return fs.promises.readFile(configFile.path, { encoding: "utf8" })
                 .then(fileData => {
                     return fileData
+                })
+                .catch(error => {
+                    let settings = new configFile.setting();
+                    return configToFileData(settings.toConfig());
                 })
         })
     )
