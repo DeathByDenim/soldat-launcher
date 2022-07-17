@@ -44,8 +44,41 @@ const makeConfigsFolders = (): Promise<void> => {
 
 const saveConfig = (configFilePath: string, config: SoldatConfig): Promise<void> => {
     return makeConfigsFolders()
-        .then(() => fs.promises.writeFile(configFilePath, configToFileData(config)))
+        .then(() => fs.promises.writeFile(configFilePath, configToFileData(config))
+            .then(() => concatClientConfig())
+//             .catch(error => Promise.reject(error.message));
+        )
         .catch(error => Promise.reject(error.message));
+}
+
+const concatClientConfig = (): Promise<void> => {
+    let fullConfigData = "";
+    let configFiles = [
+        soldatPaths.clientControlsConfigFile,
+        soldatPaths.clientCustomBindingsConfigFile,
+        soldatPaths.clientGameConfigFile,
+        soldatPaths.clientGraphicsConfigFile,
+        soldatPaths.clientPlayerConfigFile,
+        soldatPaths.clientSoundConfigFile
+    ];
+
+    const isFulfilled = <T>(input: PromiseSettledResult<T>): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
+    return Promise.allSettled(
+        configFiles.map(configFile => {
+            return fs.promises.readFile(configFile, { encoding: "utf8" })
+                .then(fileData => {
+                    return fileData
+                })
+        })
+    )
+    .then((results) => {
+        return fs.promises.writeFile(soldatPaths.clientConfigFile,
+            results
+                .filter(isFulfilled)
+                .map(result => result.value)
+                .join("\n")
+        );
+    });
 }
 
 const loadControlsConfig = (): Promise<ControlsConfig> => {

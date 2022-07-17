@@ -18,6 +18,10 @@ const soldatPaths = {
         return path.join(this.clientDirectory, "configs");
     },
 
+    get clientConfigFile(): string {
+        return path.join(this.clientConfigsDirectory, "client.cfg");
+    },
+
     get clientControlsConfigFile(): string {
         return path.join(this.clientConfigsDirectory, "controls.cfg");
     },
