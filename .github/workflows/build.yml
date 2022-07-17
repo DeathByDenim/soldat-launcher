@@ -77,3 +77,37 @@ jobs:
         with:
           name: soldat-launcher-macos
           path: out/make/zip/darwin/x64/
+
+  continuous:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: [linux, windows, macos]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Zip build dirs back together
+        run: |
+          zip -r soldat-launcher-linux.zip soldat-launcher-linux
+          zip -r soldat-launcher-macos.zip soldat-launcher-macos
+          zip -r soldat-launcher-windows.zip soldat-launcher-windows
+      #- name: Chmod and zip AppImages
+        #run: |
+          #cd appimages
+          #chmod u+x *.AppImage
+          #zip linux-appimage.zip opensoldat-*.AppImage
+          #zip linux-server-only-appimage.zip opensoldatserver-*.AppImage
+          #mv linux-appimage.zip linux-server-only-appimage.zip ..
+      - name: Upload release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: continuous
+          files: |
+            soldat-launcher-linux.zip
+            soldat-launcher-macos.zip
+            soldat-launcher-windows.zip
+          body: These are updated on every push
+          name: Continuous build
