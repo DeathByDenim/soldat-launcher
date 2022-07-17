@@ -43,7 +43,7 @@ const start = (
         joinArguments += " " + password;
     }
 
-    let pathArguments = "-fs_portable 0 -fs_userpath \"" + soldatPaths.clientDirectory + "\"";
+    let pathArguments = "-fs_userpath \"" + soldatPaths.clientDirectory + "\"";
 
     const clientProcess = spawn(soldatPaths.clientExecutable, [
         pathArguments,
