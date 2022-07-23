@@ -28,19 +28,19 @@ class OnlineGamesStore {
         onError: (errorMessage: string) => void    
     ): void => {
         try {
-            const clientId = window.soldat.client.start(
+            window.soldat.client.start(
                 ip, port, password,
                 this.clientLaunchSettingsStore?.launchArguments,
                 this.onClientFailed,
                 this.onClientTerminated,
                 true
-            );
-
-            this.clients.push({
-                id: clientId,
-                serverIp: ip,
-                serverPort: port,
-                onError
+            ).then(clientId => {
+                this.clients.push({
+                    id: clientId,
+                    serverIp: ip,
+                    serverPort: port,
+                    onError
+                });
             });
         } catch (error) {
             onError(error.message);

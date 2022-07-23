@@ -1,57 +1,81 @@
 import path from "path";
 import { isProduction } from "src/environment";
+import { ipcRenderer } from "electron";
 
 const soldatPaths = {
     clientDirectory: isProduction ? path.resolve(process.resourcesPath, "soldat") : "./soldat",
     serverDirectory: isProduction ? path.resolve(process.resourcesPath, "soldat") : "./soldat",
+
+    get appDataDirectory(): Promise<string> {
+        return ipcRenderer.invoke('getAppDataPath');
+    },
 
     get clientExecutable(): string {
         let clientExecutableFilename = "opensoldat";
         if (process.platform === "win32") {
             clientExecutableFilename += ".exe";
         }
-
         return path.join(this.clientDirectory, clientExecutableFilename);
     },
 
-    get clientConfigsDirectory(): string {
-        return path.join(this.clientDirectory, "configs");
+    get clientConfigsDirectory(): Promise<string> {
+        return ipcRenderer.invoke('getAppDataPath').then((d: string) => {
+            return path.join(d, "configs");
+        });
     },
 
-    get clientConfigFile(): string {
-        return path.join(this.clientConfigsDirectory, "client.cfg");
+    get clientConfigFile(): Promise<string> {
+        return this.clientConfigsDirectory.then((d: string) => {
+            return path.join(d, "client.cfg");
+        });
     },
 
-    get clientControlsConfigFile(): string {
-        return path.join(this.clientConfigsDirectory, "controls.cfg");
+    get clientControlsConfigFile(): Promise<string> {
+        return this.clientConfigsDirectory.then((d: string) => {
+            return path.join(d, "controls.cfg");
+        });
     },
 
-    get clientCustomBindingsConfigFile(): string {
-        return path.join(this.clientConfigsDirectory, "bindings.cfg");
+    get clientCustomBindingsConfigFile(): Promise<string> {
+        return this.clientConfigsDirectory.then((d: string) => {
+            return path.join(d, "bindings.cfg");
+        });
     },
 
-    get clientGameConfigFile(): string {
-        return path.join(this.clientConfigsDirectory, "game.cfg");
+    get clientGameConfigFile(): Promise<string> {
+        return this.clientConfigsDirectory.then((d: string) => {
+            return path.join(d, "game.cfg");
+        });
     },
 
-    get clientGraphicsConfigFile(): string {
-        return path.join(this.clientConfigsDirectory, "graphics.cfg");
+    get clientGraphicsConfigFile(): Promise<string> {
+        return this.clientConfigsDirectory.then((d: string) => {
+            return path.join(d, "graphics.cfg");
+        });
     },
 
-    get clientPlayerConfigFile(): string {
-        return path.join(this.clientConfigsDirectory, "player.cfg");
+    get clientPlayerConfigFile(): Promise<string> {
+        return this.clientConfigsDirectory.then((d: string) => {
+            return path.join(d, "player.cfg");
+        });
     },
 
-    get clientSoundConfigFile(): string {
-        return path.join(this.clientConfigsDirectory, "sound.cfg");
+    get clientSoundConfigFile(): Promise<string> {
+        return this.clientConfigsDirectory.then((d: string) => {
+            return path.join(d, "sound.cfg");
+        });
     },
 
-    get customInterfacesDirectory(): string {
-        return path.join(this.clientDirectory, "custom-interfaces");
+    get customInterfacesDirectory(): Promise<string> {
+        return ipcRenderer.invoke('getAppDataPath').then((d: string) => {
+            return path.join(d, "custom-interfaces");
+        });
     },
 
-    get demosDirectory(): string {
-        return path.join(this.clientDirectory, "demos");
+    get demosDirectory(): Promise<string> {
+        return ipcRenderer.invoke('getAppDataPath').then((d: string) => {
+            return path.join(d, "demos");
+        });
     },
 
     get mapsDirectory(): string {
@@ -60,15 +84,19 @@ const soldatPaths = {
     },
 
     get modsDirectory(): string {
-        return path.join(this.clientDirectory, "mods");
+        return path.join(this.serverDirectory, "mods");
     },
 
-    get serverConfigsDirectory(): string {
-        return path.join(this.serverDirectory, "configs");
+    get serverConfigsDirectory(): Promise<string> {
+        return ipcRenderer.invoke('getAppDataPath').then((d: string) => {
+            return path.join(d, "configs");
+        });
     },
 
-    get serverConfigFile(): string {
-        return path.join(this.serverConfigsDirectory, "server.cfg");
+    get serverConfigFile(): Promise<string> {
+        return this.serverConfigsDirectory.then((d: string) => {
+            return path.join(d, "server.cfg");
+        });
     },
 
     get serverExecutable(): string {
@@ -80,8 +108,10 @@ const soldatPaths = {
         return path.join(this.serverDirectory, serverExecutableFilename);
     },
 
-    get serverMapsList(): string {
-        return path.join(this.serverConfigsDirectory, "mapslist.txt");
+    get serverMapsList(): Promise<string> {
+        return this.serverConfigsDirectory.then((d: string) => {
+            return path.join(d, "mapslist.txt");
+        });
     }
 };
 

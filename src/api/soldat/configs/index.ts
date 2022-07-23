@@ -36,12 +36,12 @@ const makeConfigsFolders = (): Promise<void> => {
             )
         })
         .then(() => {
-            const makeClientConfigFolder = fs.promises.mkdir(
-                soldatPaths.clientConfigsDirectory, { recursive: true }
-            );
-            const makeServerConfigFolder = fs.promises.mkdir(
-                soldatPaths.serverConfigsDirectory, { recursive: true }
-            );
+            const makeClientConfigFolder = soldatPaths.clientConfigsDirectory.then(d => {
+                fs.promises.mkdir(d, { recursive: true });
+            });
+            const makeServerConfigFolder = soldatPaths.serverConfigsDirectory.then(d => {
+                fs.promises.mkdir(d, { recursive: true });
+            });
 
             return Promise.all([makeClientConfigFolder, makeServerConfigFolder])
                 .then(() => Promise.resolve())
@@ -70,83 +70,117 @@ const concatClientConfig = (): Promise<void> => {
     const isFulfilled = <T>(input: PromiseSettledResult<T>): input is PromiseFulfilledResult<T> => input.status === 'fulfilled';
     return Promise.allSettled(
         configFiles.map(configFile => {
-            return fs.promises.readFile(configFile.path, { encoding: "utf8" })
-                .then(fileData => {
-                    return fileData
-                })
-                .catch(error => {
-                    let settings = new configFile.setting();
-                    return configToFileData(settings.toConfig());
-                })
+            return configFile.path.then(path => {
+                return fs.promises.readFile(path, { encoding: "utf8" })
+                    .then(fileData => {
+                        return fileData
+                    })
+                    .catch(error => {
+                        let settings = new configFile.setting();
+                        return configToFileData(settings.toConfig());
+                    })
+            })
         })
     )
     .then((results) => {
-        return fs.promises.writeFile(soldatPaths.clientConfigFile,
-            results
-                .filter(isFulfilled)
-                .map(result => result.value)
-                .join("\n")
-        );
+        return soldatPaths.clientConfigFile.then(file => {
+            return fs.promises.writeFile(file,
+                results
+                    .filter(isFulfilled)
+                    .map(result => result.value)
+                    .join("\n")
+            );
+        });
     });
 }
 
 const loadControlsConfig = (): Promise<ControlsConfig> => {
-    return loadConfig<ControlsConfig>(soldatPaths.clientControlsConfigFile);
+    return soldatPaths.clientControlsConfigFile.then(file => {
+        return loadConfig<ControlsConfig>(file);
+    });
 }
 const saveControlsConfig = (config: ControlsConfig): Promise<void> => {
-    return saveConfig(soldatPaths.clientControlsConfigFile, config);
+    return soldatPaths.clientControlsConfigFile.then(file => {
+        return saveConfig(file, config);
+    });
 }
 
 const loadCustomBindingsConfig = (): Promise<SoldatConfig> => {
-    return loadConfig<SoldatConfig>(soldatPaths.clientCustomBindingsConfigFile);
+    return soldatPaths.clientCustomBindingsConfigFile.then((file: string) => {
+        return loadConfig<SoldatConfig>(file);
+    });
 }
 const saveCustomBindingsConfig = (config: SoldatConfig): Promise<void> => {
-    return saveConfig(soldatPaths.clientCustomBindingsConfigFile, config);
+    return soldatPaths.clientCustomBindingsConfigFile.then((file: string) => {
+        return saveConfig(file, config);
+    });
 }
 
 const loadGameConfig = (): Promise<GameConfig> => {
-    return loadConfig<GameConfig>(soldatPaths.clientGameConfigFile);
+    return soldatPaths.clientGameConfigFile.then((file: string) => {
+        return loadConfig<GameConfig>(file);
+    });
 }
 const saveGameConfig = (config: GameConfig): Promise<void> => {
-    return saveConfig(soldatPaths.clientGameConfigFile, config);
+    return soldatPaths.clientGameConfigFile.then((file: string) => {
+        return saveConfig(file, config);
+    });
 }
 
 const loadGraphicsConfig = (): Promise<GraphicsConfig> => {
-    return loadConfig<GraphicsConfig>(soldatPaths.clientGraphicsConfigFile);
+    return soldatPaths.clientGraphicsConfigFile.then((file: string) => {
+        return loadConfig<GraphicsConfig>(file);
+    });
 }
 const saveGraphicsConfig = (config: GraphicsConfig): Promise<void> => {
-    return saveConfig(soldatPaths.clientGraphicsConfigFile, config);
+    return soldatPaths.clientGraphicsConfigFile.then((file: string) => {
+        return saveConfig(file, config);
+    });
 }
 
 const loadPlayerConfig = (): Promise<PlayerConfig> => {
-    return loadConfig<PlayerConfig>(soldatPaths.clientPlayerConfigFile);
+    return soldatPaths.clientPlayerConfigFile.then((file: string) => {
+        return loadConfig<PlayerConfig>(file);
+    });
 }
 const savePlayerConfig = (config: PlayerConfig): Promise<void> => {
-    return saveConfig(soldatPaths.clientPlayerConfigFile, config);
+    return soldatPaths.clientPlayerConfigFile.then((file: string) => {
+        return saveConfig(file, config);
+    });
 }
 
 const loadSoundConfig = (): Promise<SoundConfig> => {
-    return loadConfig<SoundConfig>(soldatPaths.clientSoundConfigFile);
+    return soldatPaths.clientSoundConfigFile.then((file: string) => {
+        return loadConfig<SoundConfig>(file);
+    });
 }
 const saveSoundConfig = (config: SoundConfig): Promise<void> => {
-    return saveConfig(soldatPaths.clientSoundConfigFile, config);
+    return soldatPaths.clientSoundConfigFile.then((file: string) => {
+        return saveConfig(file, config);
+    });
 }
 
 const loadServerConfig = (): Promise<ServerConfig> => {
-    return loadConfig<ServerConfig>(soldatPaths.serverConfigFile);
+    return soldatPaths.serverConfigFile.then((file: string) => {
+        return loadConfig<ServerConfig>(file);
+    });
 }
 const saveServerConfig = (config: ServerConfig): Promise<void> => {
-    return saveConfig(soldatPaths.serverConfigFile, config);
+    return soldatPaths.serverConfigFile.then((file: string) => {
+        return saveConfig(file, config);
+    });
 }
 const loadServerMapsList = (): Promise<string[]> => {
-    return fs.promises.readFile(soldatPaths.serverMapsList, { encoding: "utf8" })
-        .then(fileData => {
-            return fileData.split(/\r?\n/).filter(mapName => mapName.length > 0);
-        })
-        .catch(error => {
-            console.warn("An error occurred when reading server's maps list file: ", error);
-            return null;
-        })
+    return soldatPaths.serverMapsList.then((list: string) => {
+        return fs.promises.readFile(list, { encoding: "utf8" })
+            .then(fileData => {
+                return fileData.split(/\r?\n/).filter(mapName => mapName.length > 0);
+            })
+            .catch(error => {
+                console.warn("An error occurred when reading server's maps list file: ", error);
+                return null;
+            })
+    });
 }
 const saveServerMapsList = (mapsNames: string[]): Promise<void> => {
     let fileData = "";
@@ -156,9 +190,11 @@ const saveServerMapsList = (mapsNames: string[]): Promise<void> => {
         }
     });
 
-    return makeConfigsFolders()
-        .then(() => fs.promises.writeFile(soldatPaths.serverMapsList, fileData))
-        .catch(error => Promise.reject(error.message));
+    return soldatPaths.serverMapsList.then((list: string) => {
+        return makeConfigsFolders()
+            .then(() => fs.promises.writeFile(list, fileData))
+            .catch(error => Promise.reject(error.message));
+    });
 }
 
 export {

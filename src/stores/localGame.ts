@@ -46,7 +46,7 @@ class LocalGameStore {
         console.log("Server is ready.");
 
         try {
-            this.localClientId = window.soldat.client.start(
+            window.soldat.client.start(
                 "127.0.0.1",
                 this.localServerPort,
                 null,
@@ -54,10 +54,12 @@ class LocalGameStore {
                 this.onLocalClientFailed.bind(this),
                 this.onLocalClientTerminated.bind(this),
                 false
-            );
-            
-            this.isStarting = false;
-            this.isRunning = true;
+            ).then(clientId => {
+                this.localClientId = clientId;
+                this.isStarting = false;
+                this.isRunning = true;
+            });
+
         } catch (error) {
             this.errorCallback(error.message);
         }

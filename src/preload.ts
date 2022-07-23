@@ -96,7 +96,7 @@ declare global {
                     onFailed: (clientId: string, error: Error) => void,
                     onTerminated: (clientId: string) => void,
                     detachedProcess: boolean
-                ) => string;
+                ) => Promise<string>;
                 stop: (clientId: string) => void;
             };
 
@@ -112,7 +112,7 @@ declare global {
                     onReady: () => void,
                     onFailed: (error: Error) => void,
                     onTerminated: (exitCode: number, stderr: string) => void
-                ) => void;
+                ) => Promise<void>;
                 stop: () => void;
             };
 
@@ -206,16 +206,25 @@ contextBridge.exposeInMainWorld(
         },
 
         "demos": {
-            listFilesNames: (): Promise<string[]> =>
-                listFilesNames(soldatPaths.demosDirectory, ".sdm"),
+            listFilesNames: (): Promise<string[]> => {
+                return soldatPaths.demosDirectory.then((path: string) => {
+                    return listFilesNames(path, ".sdm")
+                })
+            },
             play: playDemo
         },
 
         "interfaces": {
-            listArchivesNames: (): Promise<string[]> =>
-                listFilesNames(soldatPaths.customInterfacesDirectory, ".sint"),
-            listDirectoriesNames: (): Promise<string[]> =>
-                listSubdirectoriesNames(soldatPaths.customInterfacesDirectory)
+            listArchivesNames: (): Promise<string[]> => {
+                return soldatPaths.customInterfacesDirectory.then((path: string) => {
+                    return listFilesNames(path, ".sint")
+                })
+            },
+            listDirectoriesNames: (): Promise<string[]> => {
+                return soldatPaths.customInterfacesDirectory.then((path: string) => {
+                    return listSubdirectoriesNames(path)
+                })
+            }
         },
 
         "maps": {

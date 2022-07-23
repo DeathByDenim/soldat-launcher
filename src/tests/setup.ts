@@ -77,13 +77,25 @@ window.soldat = {
     },
 
     demos: {
-        listFilesNames: (): Promise<string[]> => listFilesNames(soldatPaths.demosDirectory, ".sdm"),
+        listFilesNames: (): Promise<string[]> => {
+            return soldatPaths.demosDirectory.then((path: string) => {
+                return listFilesNames(path, ".sdm")
+            }
+        },
         play: playDemo
     },
 
     interfaces: {
-        listArchivesNames: (): Promise<string[]> => listFilesNames(soldatPaths.customInterfacesDirectory, ".sint"),
-        listDirectoriesNames: (): Promise<string[]> => listSubdirectoriesNames(soldatPaths.customInterfacesDirectory)
+        listArchivesNames: (): Promise<string[]> => {
+            return soldatPaths.customInterfacesDirectory.then((path: string) => {
+                return listFilesNames(path, ".sint")
+            })
+        },
+        listDirectoriesNames: (): Promise<string[]> => {
+            return soldatPaths.customInterfacesDirectory.then((path: string) => {
+                return listSubdirectoriesNames(path)
+            })
+        }
     },
 
     maps: {

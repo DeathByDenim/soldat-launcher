@@ -28,7 +28,7 @@ const start = (
     onFailed: (clientId: string, error: Error) => void,
     onTerminated: (clientId: string) => void,
     detachedProcess: boolean
- ): string => {
+ ): Promise<string> => {
     if (!isIPv4(ip)) {
         throw Error("Invalid IP address passed to client launcher.");
     }
@@ -43,24 +43,26 @@ const start = (
         joinArguments += " " + password;
     }
 
-    let pathArguments = "-fs_userpath \"" + soldatPaths.clientDirectory + "\"";
+    return soldatPaths.appDataDirectory.then((path: string) => {
+        let pathArguments = "-fs_userpath \"" + path + "\"";
 
-    const clientProcess = spawn(soldatPaths.clientExecutable, [
-        pathArguments,
-        joinArguments,
-        launchArguments
-    ], { detached: detachedProcess });
+        const clientProcess = spawn(soldatPaths.clientExecutable, [
+            pathArguments,
+            joinArguments,
+            launchArguments
+        ], { detached: detachedProcess });
 
-    clientProcess.on("close", () => {
-        onTerminated(clientId);
+        clientProcess.on("close", () => {
+            onTerminated(clientId);
+        });
+
+        clientProcess.on("error", (error) => {
+            onFailed(clientId, error);
+        });
+
+        clients.set(clientId, clientProcess);
+        return clientId;
     });
-
-    clientProcess.on("error", (error) => {
-        onFailed(clientId, error);
-    });
-
-    clients.set(clientId, clientProcess);
-    return clientId;
 }
 
 const stop = (clientId: string): void => {

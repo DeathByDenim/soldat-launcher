@@ -34,6 +34,7 @@ const createWindow = (): void => {
         mainWindow.webContents.openDevTools();
     }
 
+
     /* Load the index.html of the app.
      *
      * This should be called after opening dev tools, otherwise async
@@ -127,6 +128,10 @@ ipcMain.on("forceClose", () => {
 
 ipcMain.on("interceptClose", () => {
     interceptClose = true;
+});
+
+ipcMain.handle("getAppDataPath", () => {
+    return app.getPath('userData');
 });
 
 // This method will be called when Electron has finished
