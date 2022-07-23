@@ -20,7 +20,12 @@
     "config": {
         "forge": {
             "packagerConfig": {
-                "extraResource": "soldat"
+                "extraResource": "soldat",
+                "osxSign": {
+                    "hardened-runtime": true,
+                    "entitlements": "entitlements.plist",
+                    "entitlements-inherit": "entitlements.plist"
+                }
             },
             "makers": [
                 {
