@@ -80,7 +80,7 @@ window.soldat = {
         listFilesNames: (): Promise<string[]> => {
             return soldatPaths.demosDirectory.then((path: string) => {
                 return listFilesNames(path, ".sdm")
-            }
+            })
         },
         play: playDemo
     },
