@@ -44,7 +44,7 @@ const start = (
     }
 
     return soldatPaths.appDataDirectory.then((path: string) => {
-        let pathArguments = "-fs_userpath \"" + path + "\"";
+        let pathArguments = "-fs_portable 0 -fs_userpath \"" + path + "\"";
 
         const clientProcess = spawn(soldatPaths.clientExecutable, [
             pathArguments,
